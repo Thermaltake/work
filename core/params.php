@@ -16,17 +16,3 @@ $Summary      = new Summary;
 $Pages        = new Pages;
 $Admins       = new Admins;
 $Apps         = new Apps;
-
-
-$SP->phpsesid = $_SESSION['phpsesid']; // ID одноразовой сессии
-$SP->cookieid = $_COOKIE['cookieid']; // ID кук в браузере
-$SP->ip       = $_SERVER['HTTP_X_REAL_IP']; // IP адрес пользователя
-$SP->host     = $_SERVER['HTTP_HOST']; // IP адрес пользователя
-
-$protocol = $_SERVER['HTTPS'] ? 'https' : 'http';
-$host = $protocol ."://".$_SERVER['HTTP_HOST'];
-
-$SP->url_param  = $_SERVER['REQUEST_URI'];
-$SP->GetFullURL = $host . $SP->url_param;
-
-
