@@ -337,7 +337,7 @@ class MySQL_Config
         if ($use_result)
             $result = $db->query($sql, MYSQLI_USE_RESULT);
         else
-            $result = $db->query($sql, MYSQLI_USE_RESULT);
+            $result = $db->query($sql);
 
         $this->queries++;
         return $result;
