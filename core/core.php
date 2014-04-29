@@ -16,10 +16,10 @@ class SessionParams
     private function CheckBan ()
     {
         global $_DB;
-        global $MCCfg;
+        global $MySQL;
         $ip     = $this->GetIP();
         
-        $result = $MCCfg->query("SELECT guid FROM $_DB.bans WHERE ip='$ip'");
+        $result = $MySQL->query("SELECT guid FROM $_DB.bans WHERE ip='$ip'");
         while($row = $result->fetch_array(MYSQL_ASSOC))
         {
             $this->SetBanned(true);
@@ -321,23 +321,75 @@ class Text
 }
 
 
-class MySQL_Config
+class MySQL
 {
-    protected $queries;
+    private $queries;
+    private $host;
+    private $port;
+    private $user;
+    private $pass;
+    private $db;
+    var $connected;
+    protected $IsConnected;
 
     function __construct ()
     {
+        $this->IsConnected = false;
         $this->queries = 0;
+        $this->host = 'localhost';
+        $this->port = '3306';
+        $this->user = 'root';
+        $this->pass = '';
+        $this->db   = 'site';
+    }
+
+    function ConnectToDB ()
+    {
+        $host = $this->GetConfig('host');
+        $port = $this->GetConfig('port');
+        $user = $this->GetConfig('user');
+        $pass = $this->GetConfig('pass');
+        $db   = $this->GetConfig('db');
+
+        if (!$this->IsConnected)
+            $this->connected = new foo_mysqli($host, $user, $pass, $db);
+
+        $this->IsConnected = true;
+    }
+
+    function SetConfig ($pname, $pvalue)
+    {
+        switch ($pname)
+        {
+            case 'host': $this->host = $pvalue; break;
+            case 'port': $this->port = $pvalue; break;
+            case 'user': $this->user = $pvalue; break;
+            case 'pass': $this->pass = $pvalue; break;
+            case 'db':   $this->db   = $pvalue; break;
+            default: ;
+        }
     }
     
+    private function GetConfig ($pname)
+    {
+        switch ($pname)
+        {
+            case 'host': return $this->host; break;
+            case 'port': return $this->port; break;
+            case 'user': return $this->user; break;
+            case 'pass': return $this->pass; break;
+            case 'db':   return $this->db; break;
+            default: return null;
+        }
+    }
+
+
     function query ($sql, $use_result = false)
     {
-        global $db;
-
         if ($use_result)
-            $result = $db->query($sql, MYSQLI_USE_RESULT);
+            $result = $this->connected->query($sql, MYSQLI_USE_RESULT);
         else
-            $result = $db->query($sql);
+            $result = $this->connected->query($sql);
 
         $this->queries++;
         return $result;
@@ -417,11 +469,11 @@ function sha_password($email,$pass)
 
 class foo_mysqli extends mysqli
 {
-    public function __construct($host, $user, $pass)
+    public function __construct($host, $user, $pass, $db)
     {
         parent::init();
 
-        if (!parent::options(MYSQLI_INIT_COMMAND, 'SET AUTOCOMMIT = 0'))
+        if (!parent::options(MYSQLI_INIT_COMMAND, 'SET AUTOCOMMIT = 1'))
         {
             die('Установка MYSQLI_INIT_COMMAND завершилась провалом');
         }
@@ -431,7 +483,7 @@ class foo_mysqli extends mysqli
             die('Установка MYSQLI_OPT_CONNECT_TIMEOUT завершилась провалом');
         }
 
-        if (!parent::real_connect($host, $user, $pass))
+        if (!parent::real_connect($host, $user, $pass, $db))
         {
             die('Ошибка подключения (' . mysqli_connect_errno() . ') '. mysqli_connect_error());
         }
