@@ -162,7 +162,7 @@ class Admins
     }
 }
 
-class Apps
+class Modules
 {
 
     protected $ModuleDir;

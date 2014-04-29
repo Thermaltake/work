@@ -15,4 +15,4 @@ $CB           = new CB;
 $Summary      = new Summary;
 $Pages        = new Pages;
 $Admins       = new Admins;
-$Apps         = new Apps;
+$Modules         = new Modules;
