@@ -1,8 +1,8 @@
 <?
 
 /* Кодировка */
-
-include ($core_dir."core.php"); // Подключаем файл ядра сайта
+define ("DOCUMENT_ROOT", $_SERVER["DOCUMENT_ROOT"]);
+include (DOCUMENT_ROOT . "/core/core.php"); // Подключаем файл ядра сайта
 
 
 $MCCfg       = new MySQL_Config; // Конфигурация подключения к базе
@@ -14,7 +14,7 @@ $MCCfg->db = 'site';
 $_DB = $MCCfg->db;
 
 // Окончание конфигурации подключения к базе...
-include ($core_dir."params.php"); // Подключаем переменные сайта
+include (DOCUMENT_ROOT . "core/params.php"); // Подключаем переменные сайта
 $db->autocommit(true); // Автоматическое применение изменений. Не удалять и не изменять ни в коем случае.
 $db->set_charset("utf8");
 

@@ -171,7 +171,7 @@ class Apps
     function __construct ()
     {
         $uri = SessionParams::GetURIId(0);
-        $ModuleName = MODULE_DIR . "/" . ($uri ? $uri : DEFAULT_MODULE) . "/";
+        $ModuleName = DOCUMENT_ROOT . "/" . MODULE_DIR . "/" . ($uri ? $uri : DEFAULT_MODULE) . "/";
         $this->ModuleDir = $ModuleName;
         $this->ModuleFileName = FILEMO_NAME;
     }
@@ -188,7 +188,7 @@ class Apps
         }
         else
         {
-            return (MODULE_DIR . "/" . DEFAULT_MODULE . "/" . FILEMO_NAME);
+            return (DOCUMENT_ROOT . "/" . MODULE_DIR . "/" . DEFAULT_MODULE . "/" . FILEMO_NAME);
         }
     }
 
