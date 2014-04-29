@@ -324,6 +324,7 @@ class MySQL
     private $user;
     private $pass;
     private $db;
+    private $charset;
     var $connected;
     protected $IsConnected;
 
@@ -331,23 +332,25 @@ class MySQL
     {
         $this->IsConnected = false;
         $this->queries = 0;
-        $this->host = 'localhost';
-        $this->port = '3306';
-        $this->user = 'root';
-        $this->pass = '';
-        $this->db   = 'site';
+        $this->host    = 'localhost';
+        $this->port    = '3306';
+        $this->user    = 'root';
+        $this->pass    = '';
+        $this->db      = 'site';
+        $this->charset = 'utf8';
     }
 
     function ConnectToDB ()
     {
-        $host = $this->GetConfig('host');
-        $port = $this->GetConfig('port');
-        $user = $this->GetConfig('user');
-        $pass = $this->GetConfig('pass');
-        $db   = $this->GetConfig('db');
+        $host    = $this->GetConfig('host');
+        $port    = $this->GetConfig('port');
+        $user    = $this->GetConfig('user');
+        $pass    = $this->GetConfig('pass');
+        $db      = $this->GetConfig('db');
+        $charset = $this->GetConfig('charset');
 
         if (!$this->IsConnected)
-            $this->connected = new foo_mysqli($host, $user, $pass, $db);
+            $this->connected = new foo_mysqli($host, $user, $pass, $db, $charset);
 
         $this->IsConnected = true;
     }
@@ -356,11 +359,12 @@ class MySQL
     {
         switch ($pname)
         {
-            case 'host': $this->host = $pvalue; break;
-            case 'port': $this->port = $pvalue; break;
-            case 'user': $this->user = $pvalue; break;
-            case 'pass': $this->pass = $pvalue; break;
-            case 'db':   $this->db   = $pvalue; break;
+            case 'host':    $this->host    = $pvalue; break;
+            case 'port':    $this->port    = $pvalue; break;
+            case 'user':    $this->user    = $pvalue; break;
+            case 'pass':    $this->pass    = $pvalue; break;
+            case 'db':      $this->db      = $pvalue; break;
+            case 'charset': $this->charset = $pvalue; break;
             default: ;
         }
     }
@@ -369,11 +373,12 @@ class MySQL
     {
         switch ($pname)
         {
-            case 'host': return $this->host; break;
-            case 'port': return $this->port; break;
-            case 'user': return $this->user; break;
-            case 'pass': return $this->pass; break;
-            case 'db':   return $this->db; break;
+            case 'host':    return $this->host;    break;
+            case 'port':    return $this->port;    break;
+            case 'user':    return $this->user;    break;
+            case 'pass':    return $this->pass;    break;
+            case 'db':      return $this->db;      break;
+            case 'charset': return $this->charset; break;
             default: return null;
         }
     }
@@ -464,7 +469,7 @@ function sha_password($email,$pass)
 
 class foo_mysqli extends mysqli
 {
-    public function __construct($host, $user, $pass, $db)
+    public function __construct($host, $user, $pass, $db, $charset)
     {
         parent::init();
 
@@ -481,6 +486,11 @@ class foo_mysqli extends mysqli
         if (!parent::real_connect($host, $user, $pass, $db))
         {
             die('Ошибка подключения (' . mysqli_connect_errno() . ') '. mysqli_connect_error());
+        }
+        
+        if (!parent::set_charset ($charset))
+        {
+            die ('Не удалось задать кодировку '.$charset);
         }
     }
 }
