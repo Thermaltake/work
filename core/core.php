@@ -15,11 +15,10 @@ class SessionParams
     
     private function CheckBan ()
     {
-        global $_DB;
         global $MySQL;
         $ip     = $this->GetIP();
         
-        $result = $MySQL->query("SELECT guid FROM $_DB.bans WHERE ip='$ip'");
+        $result = $MySQL->query("SELECT guid FROM bans WHERE ip='$ip'");
         while($row = $result->fetch_array(MYSQL_ASSOC))
         {
             $this->SetBanned(true);
@@ -45,7 +44,7 @@ class SessionParams
 
     function GetIP ()
     {
-        return Text::ScreeningURL($_SERVER['HTTP_X_REAL_IP']); // return REAL IP
+        return Text::ScreeningURL($_SERVER['REMOTE_ADDR']); // return REAL IP
     }
 
     function GetHost ()
@@ -125,15 +124,13 @@ class Admins
 
     private function IsAdminConstruct ($cookie = null)
     {
-        global $db;
-        global $_DB;
-        global $MCCfg;
+        global $MySQL;
         
         $cookie = $cookie != null ? $cookie : SessionParams::GetCookie();
 
         if ($cookie)
         {
-            $result = $MCCfg->query("SELECT username, rank FROM $_DB.admins WHERE pass_hash='$cookie'");
+            $result = $MySQL->query("SELECT username, rank FROM admins WHERE pass_hash='$cookie'");
             while($row = $result->fetch_array(MYSQL_ASSOC))
             {
                 $this->SetRank($row['rank']);
@@ -147,9 +144,7 @@ class Admins
 
     private function SetLastVisit()
     {
-        global $db;
-        global $_DB;
-        global $MCCfg;
+        global $MySQL;
 
         $cookie = SessionParams::GetCookie();
         $ip     = SessionParams::GetIP();
@@ -157,7 +152,7 @@ class Admins
 
         if ($this->IsAdmin())
         {
-            $MCCfg->query("UPDATE $_DB.admins SET time='$time', ip='$ip' WHERE pass_hash='$cookie'");
+            $MySQL->query("UPDATE admins SET time='$time', ip='$ip' WHERE pass_hash='$cookie'");
         }
     }
 }
